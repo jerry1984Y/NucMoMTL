@@ -20,7 +20,7 @@ Set ProtTrans follow procedure from https://github.com/agemagician/ProtTrans/tre
 ## 2.2 Extract features
 Extract pLMs embedding: cd to the NucMoMTL/Feature_Extract dictionary, 
 and run "python3 extract_prot.py", the pLMs embedding matrixs will be extracted to Dataset/prot_embedding fold.
-## 2.3 Train and Test
+## 2.3 Train and test
 cd to the NucMoMTL home dictionary,and run "python3 NucMoMTL.py" for training and testing the model.
 
 ## 2.4 Only For Prediction purpose
@@ -28,7 +28,6 @@ cd to the NucMoMTL home dictionary,and run "python3 NucMoMTL.py" for training an
 2. write your query sequence (once one sequence) in file with file name 'quert.txt' like below：
    
    4FRY_A_AMP TTVAQILKAKPDSGRTIYTVTKNDFVYDAIKLMAEKGIGALLVVDGDDIAGIVTERDYARKVVLQERSSKATRVEEIMTAKVRYVEPSQSTDECMALMTEHRMRHLPVLDGGKLIGLISIGDLVKSVIADQQFTIS
-   
    4FRY_A_AMP 0000000000000000000000000000000000000000000000000001010110000000000000000000001011100000000000000000001110100000000000000000000000000000
-4. run python3 predict.py
+3. run python3 predict.py
     
