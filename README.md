@@ -26,7 +26,8 @@ cd to the NucMoMTL home dictionary,and run "python3 NucMoMTL.py" for training an
 ## 2.4 Only For Prediction purpose
 1. unzip the pre-trained model in model fold；
 2. write your query sequence (once one sequence) in file with file name 'quert.txt' like below：
+   
    4FRY_A_AMP TTVAQILKAKPDSGRTIYTVTKNDFVYDAIKLMAEKGIGALLVVDGDDIAGIVTERDYARKVVLQERSSKATRVEEIMTAKVRYVEPSQSTDECMALMTEHRMRHLPVLDGGKLIGLISIGDLVKSVIADQQFTIS
    4FRY_A_AMP 0000000000000000000000000000000000000000000000000001010110000000000000000000001011100000000000000000001110100000000000000000000000000000
-3. run python3 predcit.py
+4. run python3 predcit.py
     
