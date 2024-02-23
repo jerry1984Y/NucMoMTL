@@ -15,7 +15,7 @@ scikit-learn = 1.2.2
 ProtTrans (ProtT5-XL-UniRef50 model)
 
 # 3. How to Use
-## 3.1Set up environment for ProtTrans
+## 3.1 Set up environment for ProtTrans
 Set ProtTrans follow procedure from https://github.com/agemagician/ProtTrans/tree/master
 ## 3.2 Extract features
 Extract pLMs embedding: cd to the NucMoMTL/Feature_Extract dictionary, 
@@ -28,5 +28,5 @@ cd to the NucMoMTL home dictionary,and run "python3 NucMoMTL.py" for training an
 2. write your query sequence (once one sequence) in file with file name 'quert.txt' like below：
    4FRY_A_AMP TTVAQILKAKPDSGRTIYTVTKNDFVYDAIKLMAEKGIGALLVVDGDDIAGIVTERDYARKVVLQERSSKATRVEEIMTAKVRYVEPSQSTDECMALMTEHRMRHLPVLDGGKLIGLISIGDLVKSVIADQQFTIS
    4FRY_A_AMP 0000000000000000000000000000000000000000000000000001010110000000000000000000001011100000000000000000001110100000000000000000000000000000
-3. run python3 predcitpy
+3. run python3 predcit.py
     
