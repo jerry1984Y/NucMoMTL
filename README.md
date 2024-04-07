@@ -29,7 +29,7 @@ run "python3 NucMoMTL.py" for training and testing the model for ATP, ADP, AMP, 
 run "python3 NucMoMTL_Nuc207.py" for training and testing the model for TMP, CTP, CMP, UTP, UMP binding residues prediction.  
 run "python3 NucMoMTL_Nuc207_1521.py" for training and testing the model for ATP, ADP, AMP, GTP, GDP, TMP, CTP, CMP, UTP, UMP binding residues prediction.  
 
-## 3.4 Only For ATP, ADP, AMP, GTP, GDP binding residues Prediction purpose
+## 3.4 Only For ATP, ADP, AMP, GTP, GDP binding residues prediction purpose
 
 1. unzip the pre-trained model in pre_model folder；  
    pre_model  
