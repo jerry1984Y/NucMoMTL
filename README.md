@@ -37,10 +37,12 @@ run "python3 NucMoMTL_Nuc207_1521.py" for training and testing the model for ATP
    |--   S2MTLTT5Msl2ADDMTL_S2Nuc-CNN_M_scale_l2ADD_02__T5_3.pkl  
    |--   S2MTLTT5Msl2ADDMTL_S2Nuc-CNN_M_scale_l2ADD_02__T5_4.pkl  
    |--   S2MTLTT5Msl2ADDMTL_S2Nuc-CNN_M_scale_l2ADD_02__T5_5.pkl  
-3. write your query sequence (once one sequence) in file with file name 'quert.txt' like below：
+2. write your query sequence (once one sequence) in file with file name 'query.txt' like below：
    
    4FRY_A_AMP TTVAQILKAKPDSGRTIYTVTKNDFVYDAIKLMAEKGIGALLVVDGDDIAGIVTERDYARKVVLQERSSKATRVEEIMTAKVRYVEPSQSTDECMALMTEHRMRHLPVLDGGKLIGLISIGDLVKSVIADQQFTIS
 
    4FRY_A_AMP 0000000000000000000000000000000000000000000000000001010110000000000000000000001011100000000000000000001110100000000000000000000000000000
-4. run python3 predict.py
+
+   and put the query.txt into customer_test folder.
+3. run python3 predict.py
     
