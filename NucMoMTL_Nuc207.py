@@ -398,7 +398,7 @@ if __name__ == "__main__":
         test_file_list = read_data_file_trip(tests)
         totalkv = {'TMP': [], 'CTP': [], 'CMP': [], 'UTP': [], 'UMP': []}
         for i in range(circle):
-            storeapl = 'T5MTLADD_l2_MTL_' + pl + '_' + str(i) + '.pkl'
+            storeapl = 'T5_207_MTLADD_l2_MTL_' + pl + '_' + str(i) + '.pkl'
             train(storeapl)
             tmresult = test(storeapl)
 
@@ -409,7 +409,7 @@ if __name__ == "__main__":
             totalkv['UMP'].append(tmresult['UMP'])
             torch.cuda.empty_cache()
 
-        with open('T5Result_MTLT5_ADD_l2MTL_' + pl + '.txt', 'w') as f:
+        with open('T5_207_Result_MTLT5_ADD_l2MTL_' + pl + '.txt', 'w') as f:
             nucs = ['TMP', 'CTP', 'CMP', 'UTP', 'UMP']
             for nuc in nucs:
                 np.savetxt(f, totalkv[nuc], delimiter=',', footer='Above is  record ' + nuc, fmt='%s')
