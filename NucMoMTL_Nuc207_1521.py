@@ -437,14 +437,8 @@ if __name__ == "__main__":
     device = torch.device("cuda" if cuda else "cpu")
 
 
-    trainfiles = [  'DataSet/Train/Nuc_207_1521_train_all.txt'
-        #'DataSet/Train/pretrain_train_all227.txt',
-        #'DataSet/Train/pretrain_train_all221.txt'
-    ]
-    testfiles = [ 'DataSet/Test/Nuc_207_1521_test_all.txt'
-        #'DataSet/Test/pretrain_test_all_17.txt',
-        #'DataSet/Test/pretrain_test_all_50.txt'
-    ]
+    trainfiles = [  'DataSet/Train/Nuc_207_1521_Train_all.txt' ]
+    testfiles = [ 'DataSet/Test/Nuc_207_1521_Test_all.txt']
     pls = ['NucMoMTL207_1521'
     ]
 
@@ -455,7 +449,7 @@ if __name__ == "__main__":
         test_file_list = read_data_file_trip(tests)
         totalkv = {'TMP': [], 'CTP': [], 'CMP': [], 'UTP': [], 'UMP': [],'ATP': [], 'ADP': [], 'AMP': [], 'GDP': [], 'GTP': []}
         for i in range(circle):
-            storeapl = 'T5MTLADD_l2_MTL_' + pl + '_' + str(i) + '.pkl'
+            storeapl = 'T5207_1521MTLADD_l2_MTL_' + pl + '_' + str(i) + '.pkl'
             train(storeapl)
             tmresult = test(storeapl)
 
@@ -471,7 +465,7 @@ if __name__ == "__main__":
             totalkv['GTP'].append(tmresult['GTP'])
             torch.cuda.empty_cache()
 
-        with open('T5Result_MTLT5_ADD_l2MTL_' + pl + '.txt', 'w') as f:
+        with open('T5207_1521MTLADD_l2_MTL_' + pl + '.txt', 'w') as f:
             nucs = ['TMP', 'CTP', 'CMP', 'UTP', 'UMP','ATP', 'ADP', 'AMP', 'GDP', 'GTP']
             for nuc in nucs:
                 np.savetxt(f, totalkv[nuc], delimiter=',', footer='Above is  record ' + nuc, fmt='%s')
