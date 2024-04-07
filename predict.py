@@ -1,5 +1,3 @@
-#由于训练集以及测试集都给样本打了任务类别标签
-#注意点，随机抽样样本，在计算loss的时候要注意算入不同的损失函数下，并且要注意移除padding的数据
 import os
 import re
 
@@ -71,13 +69,13 @@ class BioinformaticsDataset(Dataset):
     def __getitem__(self, index):
         filename = self.X[index]
         #esm_embedding1280 prot_embedding  esm_embedding2560 msa_embedding
-        df0 = pd.read_csv('DataSet/prot_embedding/' + filename + '.data', header=None)
+        df0 = pd.read_csv('customer_test/' + filename + '.data', header=None)
         prot = df0.values.astype(float).tolist()
 
         prot = torch.tensor(prot)
 
 
-        df2= pd.read_csv('DataSet/prot_embedding/'+  filename+'.label', header=None)
+        df2= pd.read_csv('customer_test/'+  filename+'.label', header=None)
         label = df2.values.astype(int).tolist()
         label = torch.tensor(label)
         #reduce 2D to 1D
@@ -275,7 +273,7 @@ def printresult(ligand,actual_label,predict_prob,predict_label):
     print('youden ', youden)
     print('auc', auc)
     print('AUPR ', aupr_1)
-    save_prob_label(predict_prob, actual_label, ligand+'.csv')
+    save_prob_label(predict_prob, actual_label, 'customer_test/'+ligand+'.csv')
     print('---------------END------------')
 
 def extratdata(file,destfolder):
@@ -322,9 +320,9 @@ if __name__ == "__main__":
     model = model.to(device)
     model = model.eval()
     testfilename='intput.txt'
-    extratdata(testfilename, '../DataSet/prot_embedding/')
+    extratdata(testfilename, 'customer_test/')
 
 
-    test('S2MTLTT5Msl2ADDMTL_S2Nuc-CNN_M_scale_l2ADD_02__T5_1.pkl',testfilename)
+    test('pre_model/S2MTLTT5Msl2ADDMTL_S2Nuc-CNN_M_scale_l2ADD_02__T5_1.pkl',testfilename)
 
 
