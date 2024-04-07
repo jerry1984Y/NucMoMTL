@@ -319,7 +319,7 @@ if __name__ == "__main__":
     model = T5EncoderModel.from_pretrained("Rostlab/prot_t5_xl_uniref50")
     model = model.to(device)
     model = model.eval()
-    testfilename='intput.txt'
+    testfilename='customer_test/query.txt'
     extratdata(testfilename, 'customer_test/')
 
 
