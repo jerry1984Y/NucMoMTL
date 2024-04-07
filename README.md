@@ -14,16 +14,19 @@ scikit-learn = 1.2.2
 
 ProtTrans (ProtT5-XL-UniRef50 model)
 
-# 2. How to Use
-## 2.1 Set up environment for ProtTrans
+# 2 Datasets
+We provided a total of four benchmark datasets, namely Nuc-798, Nuc-849, Nuc-1521, and Nuc-207. Among them, Nuc-798, Nuc-849, and Nuc-1521 each consist of five common nucleotide (ATP, ADP, AMP, GTP, GDP) binding proteins constructed at different times. Nuc-207 comprises five uncommon nucleotide (TMP, CTP, CMP, UTP, UMP) binding proteins.
+
+# 3. How to Use
+## 3.1 Set up environment for ProtTrans
 Set ProtTrans follow procedure from https://github.com/agemagician/ProtTrans/tree/master
-## 2.2 Extract features
+## 3.2 Extract features
 Extract pLMs embedding: cd to the NucMoMTL/Feature_Extract dictionary, 
-and run "python3 extract_prot.py", the pLMs embedding matrixs will be extracted to Dataset/prot_embedding fold.
-## 2.3 Train and test
+and run "python3 extract_prot.py", the pLMs embedding matrixs will be extracted to Dataset/prot_embedding folder.
+## 3.3 Train and test
 cd to the NucMoMTL home dictionary,and run "python3 NucMoMTL.py" for training and testing the model.
 
-## 2.4 Only For Prediction purpose
+## 3.4 Only For Prediction purpose
 1. unzip the pre-trained model in model fold；
 2. write your query sequence (once one sequence) in file with file name 'quert.txt' like below：
    
