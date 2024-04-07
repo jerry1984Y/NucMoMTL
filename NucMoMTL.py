@@ -391,18 +391,18 @@ def printresult(ligand,actual_label,predict_prob,predict_label):
     return sensitivity, specificity, acc, precision, mcc, auc, aupr_1
 if __name__ == "__main__":
     cuda = torch.cuda.is_available()
-    torch.cuda.set_device(0)
+    #torch.cuda.set_device(0)
     print("use cuda: {}".format(cuda))
     device = torch.device("cuda" if cuda else "cpu")
 
 
-    trainfiles = [  'DataSet/Train/pretrain_train_all_newdataset.txt'
-        #'DataSet/Train/pretrain_train_all227.txt',
-        #'DataSet/Train/pretrain_train_all221.txt'
+    trainfiles = [  'DataSet/Train/Nuc-1521_train_all.txt'
+        #'DataSet/Train/Nuc-798_Train_all.txt',
+        #'DataSet/Train/Nuc-849_Train_all.txt',
     ]
-    testfiles = [ 'DataSet/Test/pretrain_test_all_newdataset.txt'
-        #'DataSet/Test/pretrain_test_all_17.txt',
-        #'DataSet/Test/pretrain_test_all_50.txt'
+    testfiles = [ 'DataSet/Test/Nuc-1521_Test_all.txt'
+        #'DataSet/Test/Nuc-798_Test_all.txt',
+        #'DataSet/Test/Nuc-849_Test_all.txt'
     ]
     pls = ['NucMoMTL'
     ]
