@@ -30,18 +30,21 @@ run "python3 NucMoMTL_Nuc207.py" for training and testing the model for TMP, CTP
 run "python3 NucMoMTL_Nuc207_1521.py" for training and testing the model for ATP, ADP, AMP, GTP, GDP, TMP, CTP, CMP, UTP, UMP binding residues prediction.  
 
 ## 3.4 Only For ATP, ADP, AMP, GTP, GDP binding residues Prediction purpose
+
 1. unzip the pre-trained model in pre_model folder；  
    pre_model  
    |--   S2MTLTT5Msl2ADDMTL_S2Nuc-CNN_M_scale_l2ADD_02__T5_1.pkl  
    |--   S2MTLTT5Msl2ADDMTL_S2Nuc-CNN_M_scale_l2ADD_02__T5_2.pkl  
    |--   S2MTLTT5Msl2ADDMTL_S2Nuc-CNN_M_scale_l2ADD_02__T5_3.pkl  
    |--   S2MTLTT5Msl2ADDMTL_S2Nuc-CNN_M_scale_l2ADD_02__T5_4.pkl  
-   |--   S2MTLTT5Msl2ADDMTL_S2Nuc-CNN_M_scale_l2ADD_02__T5_5.pkl  
-2. write your query sequence (once one sequence) in file with file name 'query.txt' like below：
+   |--   S2MTLTT5Msl2ADDMTL_S2Nuc-CNN_M_scale_l2ADD_02__T5_5.pkl
+   Alternatively, download the model parameters from http://pan.njust.edu.cn/#/link/yirwtnIWna3w3u2i7HdG
+   
+3. write your query sequence (once one sequence) in file with file name 'query.txt' like below：
    
    4FRY_A_AMP TTVAQILKAKPDSGRTIYTVTKNDFVYDAIKLMAEKGIGALLVVDGDDIAGIVTERDYARKVVLQERSSKATRVEEIMTAKVRYVEPSQSTDECMALMTEHRMRHLPVLDGGKLIGLISIGDLVKSVIADQQFTIS  
    4FRY_A_AMP 0000000000000000000000000000000000000000000000000001010110000000000000000000001011100000000000000000001110100000000000000000000000000000
 
    and put the query.txt into customer_test folder.
-3. run python3 predict.py
+4. run python3 predict.py
     
