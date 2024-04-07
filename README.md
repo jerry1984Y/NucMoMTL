@@ -37,7 +37,7 @@ run "python3 NucMoMTL_Nuc207_1521.py" for training and testing the model for ATP
    |--   S2MTLTT5Msl2ADDMTL_S2Nuc-CNN_M_scale_l2ADD_02__T5_2.pkl  
    |--   S2MTLTT5Msl2ADDMTL_S2Nuc-CNN_M_scale_l2ADD_02__T5_3.pkl  
    |--   S2MTLTT5Msl2ADDMTL_S2Nuc-CNN_M_scale_l2ADD_02__T5_4.pkl  
-   |--   S2MTLTT5Msl2ADDMTL_S2Nuc-CNN_M_scale_l2ADD_02__T5_5.pkl
+   |--   S2MTLTT5Msl2ADDMTL_S2Nuc-CNN_M_scale_l2ADD_02__T5_5.pkl  
    Alternatively, download the model parameters from http://pan.njust.edu.cn/#/link/yirwtnIWna3w3u2i7HdG
    
 3. write your query sequence (once one sequence) in file with file name 'query.txt' like below：
