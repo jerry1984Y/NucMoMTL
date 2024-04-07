@@ -74,7 +74,8 @@ class BioinformaticsDataset(Dataset):
     def __init__(self, X):
         self.X = X
     def __getitem__(self, index):
-        filename = self.X[index]
+        filename = self.X[index][0]
+        print(filename)
         #esm_embedding1280 prot_embedding  esm_embedding2560 msa_embedding
         df0 = pd.read_csv('customer_test/' + filename + '.data', header=None)
         prot = df0.values.astype(float).tolist()
@@ -328,7 +329,6 @@ if __name__ == "__main__":
     model = model.eval()
     testfilename='customer_test/query.txt'
     extratdata(testfilename, 'customer_test/')
-
 
     test('pre_model/S2MTLTT5Msl2ADDMTL_S2Nuc-CNN_M_scale_l2ADD_02__T5_1.pkl',testfilename)
 
