@@ -74,18 +74,6 @@ class BioinformaticsDataset(Dataset):
         prot = torch.tensor(prot)
 
 
-        # prot=torch.cat((prot,feature_dfpet),dim=1)
-        #agv = torch.mean(prot, dim=0)
-        # print(agv)
-        #agv = agv.repeat(prot.shape[0], 1)
-
-
-        #hhdatasethhm pssm20 hhdataseta3m
-        # df1 = pd.read_csv('DataSet/hhdatasethhm' + '/' + filename + '.shhfeature', header=None)
-        # evo = df1.values.astype(float).tolist()
-        # evo=torch.tensor(evo)
-        # evo=1/(1+torch.exp(-evo))
-
         df2= pd.read_csv('DataSet/prot_embedding/'+  filename+'.label', header=None)
         label = df2.values.astype(int).tolist()
         label = torch.tensor(label)
@@ -398,14 +386,8 @@ if __name__ == "__main__":
     device = torch.device("cuda" if cuda else "cpu")
 
 
-    trainfiles = [  'DataSet/Train/Nuc_207_train_all.txt'
-        #'DataSet/Train/pretrain_train_all227.txt',
-        #'DataSet/Train/pretrain_train_all221.txt'
-    ]
-    testfiles = [ 'DataSet/Test/Nuc_207_test_all.txt'
-        #'DataSet/Test/pretrain_test_all_17.txt',
-        #'DataSet/Test/pretrain_test_all_50.txt'
-    ]
+    trainfiles = [  'DataSet/Train/Nuc_207_Train_all.txt' ]
+    testfiles = [ 'DataSet/Test/Nuc_207_Test_all.txt']
     pls = ['NucMoMTL207'
     ]
 
