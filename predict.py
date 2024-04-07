@@ -31,9 +31,16 @@ def read_data_file_trip(filename):
     results=[]
     block=len(data)//2
     for index in range(block):
-        item=data[index*2+0].split()
-        name =item[0].strip()
-        results.append(name)
+        item1=data[index*2+0].split()
+        name =item1[0].strip()
+        seq=item1[1].strip()
+        item2 = data[index * 2 + 1].split()
+        item = []
+        item.append(name)
+        item.append(seq)
+        item.append(len(seq))
+        item.append(item2[1].strip())
+        results.append(item)
     return results
 
 def coll_paddding(batch_traindata):
