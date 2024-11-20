@@ -21,7 +21,7 @@ Set ProtTrans follow procedure from https://github.com/agemagician/ProtTrans/tre
 
 ### 3.2.1 Extract features
 Extract pLMs embedding: cd to the NucMoMTL/Feature_Extract dictionary, and run "python3 extract_prot.py", the pLMs embedding matrixs will be extracted to Dataset/prot_embedding folder.
-## 3.2.2 Train and test
+### 3.2.2 Train and test
 cd to the NucMoMTL home dictionary.  
 run "python3 NucMoMTL.py" for training and testing the model for ATP, ADP, AMP, GTP, GDP binding residues prediction.  
 run "python3 NucMoMTL_Nuc207.py" for training and testing the model for TMP, CTP, CMP, UTP, UMP binding residues prediction.  
