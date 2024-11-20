@@ -20,8 +20,7 @@ Set ProtTrans follow procedure from https://github.com/agemagician/ProtTrans/tre
 ## 3.2 Train and Test   
 
 ### 3.2.1 Extract features
-Extract pLMs embedding: cd to the NucMoMTL/Feature_Extract dictionary, and run "python3 extract_prot.py", the pLMs embedding matrixs will be extracted to Dataset/prot_embedding folder.   
-
+Extract pLMs embedding: cd to the NucMoMTL/Feature_Extract dictionary, and run "python3 extract_prot.py", the pLMs embedding matrixs will be extracted to Dataset/prot_embedding folder.
 ## 3.2.2 Train and test
 cd to the NucMoMTL home dictionary.  
 run "python3 NucMoMTL.py" for training and testing the model for ATP, ADP, AMP, GTP, GDP binding residues prediction.  
@@ -47,4 +46,8 @@ run "python3 NucMoMTL_Nuc207_1521.py" for training and testing the model for ATP
 
    and put the query.txt into customer_test folder.   
 4. cd to the NucMoMTL home dictionary and run python3 predict.py ,the predicted results named "result.xlsx" will be saved in the customer_test folder.
+
+# REFERENCES
+[1] Yu, D. J.; Hu, J.; Yang, J.; Shen, H. B.; Tang, J.; Yang, J. Y. Designing template-free predictor for targeting protein-ligand binding sites with classifier ensemble and spatial clustering. IEEE/ACM Trans Comput Biol Bioinform, 2013, 10(4), 994-1008.
+[2] Chen, K.; Mizianty, M. J.; Kurgan, L. Prediction and analysis of nucleotide-binding residues using sequence and sequence-derived structural descriptors. Bioinformatics, 2012, 28(3), 331-341.
     
