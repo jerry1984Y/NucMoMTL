@@ -5,30 +5,28 @@ Accurate identification of protein-nucleotide binding residues is essential for 
 
 # 1. Requirements
 Python >= 3.10.6   
-torch = 2.0.0
-
-pandas = 2.0.0
-
-scikit-learn = 1.2.2
-
+torch = 2.0.0   
+pandas = 2.0.0   
+scikit-learn = 1.2.2   
 ProtTrans (ProtT5-XL-UniRef50 model)
 
 # 2 Datasets
-We provided a total of four benchmark datasets, namely Nuc-798, Nuc-849, Nuc-1521, and Nuc-207. Among them, Nuc-798, Nuc-849, and Nuc-1521 each consist of five common nucleotide (ATP, ADP, AMP, GTP, GDP) binding proteins constructed at different times. Nuc-207 comprises five uncommon nucleotide (TMP, CTP, CMP, UTP, UMP) binding proteins.
+We provided a total of four benchmark datasets, namely Nuc-798 (proposed by Yu et al [1] in 2013), Nuc-849 (proposed by Chen et al. [2] in 2011), Nuc-1521 (proposed by our work in 2023), and Nuc-207 (proposed by our work in 2023). Among them, Nuc-798, Nuc-849, and Nuc-1521 each consist of five common nucleotide (ATP, ADP, AMP, GTP, GDP) binding proteins constructed at different times. Nuc-207 comprises five uncommon nucleotide (TMP, CTP, CMP, UTP, UMP) binding proteins.
 
 # 3. How to use
 ## 3.1 Set up environment for ProtTrans
 Set ProtTrans follow procedure from https://github.com/agemagician/ProtTrans/tree/master
-## 3.2 Extract features
-Extract pLMs embedding: cd to the NucMoMTL/Feature_Extract dictionary, 
-and run "python3 extract_prot.py", the pLMs embedding matrixs will be extracted to Dataset/prot_embedding folder.
-## 3.3 Train and test
+
+## 3.2 Train and Test
+### 3.2.1 Extract features
+Extract pLMs embedding: cd to the NucMoMTL/Feature_Extract dictionary, and run "python3 extract_prot.py", the pLMs embedding matrixs will be extracted to Dataset/prot_embedding folder.
+## 3.2.2 Train and test
 cd to the NucMoMTL home dictionary.  
 run "python3 NucMoMTL.py" for training and testing the model for ATP, ADP, AMP, GTP, GDP binding residues prediction.  
 run "python3 NucMoMTL_Nuc207.py" for training and testing the model for TMP, CTP, CMP, UTP, UMP binding residues prediction.  
 run "python3 NucMoMTL_Nuc207_1521.py" for training and testing the model for ATP, ADP, AMP, GTP, GDP, TMP, CTP, CMP, UTP, UMP binding residues prediction.  
 
-## 3.4 Only For ATP, ADP, AMP, GTP, GDP binding residues prediction purpose
+## 3.3 Only For nucleotide binding residues prediction purpose
 
 1. unzip the pre-trained model in pre_model folder；  
    pre_model  
@@ -39,11 +37,11 @@ run "python3 NucMoMTL_Nuc207_1521.py" for training and testing the model for ATP
    |--   S2MTLTT5Msl2ADDMTL_S2Nuc-CNN_M_scale_l2ADD_02__T5_5.pkl
 
 
-   Alternatively, download the model parameters from http://pan.njust.edu.cn/#/link/yirwtnIWna3w3u2i7HdG
+   Alternatively, download the pre-trained models from http://pan.njust.edu.cn/#/link/yirwtnIWna3w3u2i7HdG
    
 3. write your query sequence (once one sequence) in file with file name 'query.txt' like below：
    
-   4FRY_A_AMP TTVAQILKAKPDSGRTIYTVTKNDFVYDAIKLMAEKGIGALLVVDGDDIAGIVTERDYARKVVLQERSSKATRVEEIMTAKVRYVEPSQSTDECMALMTEHRMRHLPVLDGGKLIGLISIGDLVKSVIADQQFTIS  
+   TTVAQILKAKPDSGRTIYTVTKNDFVYDAIKLMAEKGIGALLVVDGDDIAGIVTERDYARKVVLQERSSKATRVEEIMTAKVRYVEPSQSTDECMALMTEHRMRHLPVLDGGKLIGLISIGDLVKSVIADQQFTIS  
    4FRY_A_AMP 0000000000000000000000000000000000000000000000000001010110000000000000000000001011100000000000000000001110100000000000000000000000000000
 
    and put the query.txt into customer_test folder.
