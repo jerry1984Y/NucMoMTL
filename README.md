@@ -1,5 +1,4 @@
-# NucMoMTL
-Identification of Protein-nucleotide Binding Residues with Deep Multi-task and Multi-scale Learning
+# Identification of Protein-nucleotide Binding Residues with Deep Multi-task and Multi-scale Learning
 
 Accurate identification of protein-nucleotide binding residues is essential for functional annotation of proteins and drug discovery. Advancements in computational methods for predicting binding residues from protein sequences have significantly improved predictive accuracy. However, it remains a challenge for current methodologies to extract discriminative features and assimilate heterogeneous data from different nucleotide types. To address this, we introduce NucMoMTL, a novel predictor specifically designed for identifying protein-nucleotide binding residues. Specifically, NucMoMTL leverages pre-trained unsupervised language models for robust sequence embedding and utilizes deep multi-task and multi-scale learning within orthogonal constraints to extract shared representations, capitalizing on auxiliary information from diverse nucleotides. Evaluation of NucMoMTL on the benchmark datasets demonstrates that it outperforms state-of-the-art methods, achieving an average AUC and AUPRC of 0.956 and 0.541, respectively. NucMoMTL can be explored as a reliable computational tool for identifying protein-nucleotide binding residues and facilitating drug discovery and protein function prediction. 
 
@@ -42,8 +41,7 @@ run "python3 NucMoMTL_Nuc207_1521.py" for training and testing the model for ATP
 3. write your query sequence (once one sequence) in file with file name 'query.txt' like below：
    
    TTVAQILKAKPDSGRTIYTVTKNDFVYDAIKLMAEKGIGALLVVDGDDIAGIVTERDYARKVVLQERSSKATRVEEIMTAKVRYVEPSQSTDECMALMTEHRMRHLPVLDGGKLIGLISIGDLVKSVIADQQFTIS  
-   4FRY_A_AMP 0000000000000000000000000000000000000000000000000001010110000000000000000000001011100000000000000000001110100000000000000000000000000000
 
-   and put the query.txt into customer_test folder.
-4. run python3 predict.py
+   and put the query.txt into customer_test folder.   
+4. cd to the NucMoMTL home dictionary and run python3 predict.py ,the predicted results named "result.xlsx" will be saved in the customer_test folder.
     
