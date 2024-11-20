@@ -4,8 +4,7 @@ Identification of Protein-nucleotide Binding Residues with Deep Multi-task and M
 Accurate identification of protein-nucleotide binding residues is essential for functional annotation of proteins and drug discovery. Advancements in computational methods for predicting binding residues from protein sequences have significantly improved predictive accuracy. However, it remains a challenge for current methodologies to extract discriminative features and assimilate heterogeneous data from different nucleotide types. To address this, we introduce NucMoMTL, a novel predictor specifically designed for identifying protein-nucleotide binding residues. Specifically, NucMoMTL leverages pre-trained unsupervised language models for robust sequence embedding and utilizes deep multi-task and multi-scale learning within orthogonal constraints to extract shared representations, capitalizing on auxiliary information from diverse nucleotides. Evaluation of NucMoMTL on the benchmark datasets demonstrates that it outperforms state-of-the-art methods, achieving an average AUC and AUPRC of 0.956 and 0.541, respectively. NucMoMTL can be explored as a reliable computational tool for identifying protein-nucleotide binding residues and facilitating drug discovery and protein function prediction. 
 
 # 1. Requirements
-Python >= 3.10.6
-
+Python >= 3.10.6   
 torch = 2.0.0
 
 pandas = 2.0.0
