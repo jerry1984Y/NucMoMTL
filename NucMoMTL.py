@@ -9,17 +9,6 @@ import torch.nn.functional as F
 from LossFunction.focalLoss import FocalLoss_v2
 
 
-def read_file_list_from_fasta(filename):
-    f = open(filename)
-    data = f.readlines()
-    f.close()
-    results=[]
-    block=len(data)//2
-    for index in range(block):
-        item=data[index*2+0].strip()
-        name =item.replace('>','').strip()
-        results.append(name)
-    return results
 
 def read_data_file_trip(filename):
     f = open(filename)
@@ -37,103 +26,61 @@ def read_data_file_trip(filename):
 def coll_paddding(batch_traindata):
     batch_traindata.sort(key=lambda data: len(data[0]), reverse=True)
     feature_plms = []
-    #f0agv=[]
-    #feature_evo = []
 
     train_y = []
-    indexs=[]
+    task_ids=[]
 
     for data in batch_traindata:
         feature_plms.append(data[0])
-        #f0agv.append(data[1])
-        #feature_evo.append(data[1])
+
         train_y.append(data[1])
-        indexs.append(data[2])
+        task_ids.append(data[2])
     data_length = [len(data) for data in feature_plms]
-    #
-    # mask = torch.full((len(batch_traindata), data_length[0]), False).bool()  # crete init mask
-    # for mi, aci in zip(mask, data_length):
-    #     mi[aci:] = True
+
 
     feature_plms = torch.nn.utils.rnn.pad_sequence(feature_plms, batch_first=True, padding_value=0)
-    #f0agv = torch.nn.utils.rnn.pad_sequence(f0agv, batch_first=True, padding_value=0)
-    #feature_evo = torch.nn.utils.rnn.pad_sequence(feature_evo, batch_first=True, padding_value=0)
     train_y = torch.nn.utils.rnn.pad_sequence(train_y, batch_first=True, padding_value=0)
-    return feature_plms,train_y,torch.tensor(data_length),torch.tensor(indexs)
+    task_ids = torch.nn.utils.rnn.pad_sequence(task_ids, batch_first=True, padding_value=0)
+    return feature_plms,train_y,torch.tensor(data_length),task_ids
 
 class BioinformaticsDataset(Dataset):
     # X: list of filename
-    def __init__(self, X):
+    def __init__(self, X,imemorylist,tasks):
         self.X = X
+        self.ilist = imemorylist
+        self.Tasks = tasks
+        if len(self.ilist)==0:
+            for filename in X:
+                # esm_embedding1280 prot_embedding  esm_embedding2560 msa_embedding
+                df0 = pd.read_csv('DataSet/prot_embedding/' + filename + '.data', header=None)  # .data  .pssm
+                prot = df0.values.astype(float).tolist()
+
+                prot = torch.tensor(prot)
+
+                df2 = pd.read_csv('DataSet/prot_embedding/' + filename + '.label', header=None)
+                label = df2.values.astype(int).tolist()
+                label = torch.tensor(label)
+                # reduce 2D to 1D
+                label = torch.squeeze(label)
+                taskid = 0
+                find = False
+                for taskname in self.Tasks:
+                    if '_' + taskname in filename:
+                        find = True
+                        break
+                    taskid += 1
+                if not find:
+                    taskid = 0
+                task_id_label = torch.ones(prot.shape[0], dtype=int) * taskid
+                tmp=[]
+                tmp.append(prot)
+                tmp.append(label)
+                tmp.append(task_id_label)
+                self.ilist.append(tmp)
     def __getitem__(self, index):
-        filename = self.X[index]
-        #esm_embedding1280 prot_embedding  esm_embedding2560 msa_embedding
-        df0 = pd.read_csv('DataSet/prot_embedding/' + filename + '.data', header=None)
-        prot = df0.values.astype(float).tolist()
-
-        prot = torch.tensor(prot)
-
-
-        # prot=torch.cat((prot,feature_dfpet),dim=1)
-        #agv = torch.mean(prot, dim=0)
-        # print(agv)
-        #agv = agv.repeat(prot.shape[0], 1)
-
-
-        #hhdatasethhm pssm20 hhdataseta3m
-        # df1 = pd.read_csv('DataSet/hhdatasethhm' + '/' + filename + '.shhfeature', header=None)
-        # evo = df1.values.astype(float).tolist()
-        # evo=torch.tensor(evo)
-        # evo=1/(1+torch.exp(-evo))
-
-        df2= pd.read_csv('DataSet/prot_embedding/'+  filename+'.label', header=None)
-        label = df2.values.astype(int).tolist()
-        label = torch.tensor(label)
-        #reduce 2D to 1D
-        label=torch.squeeze(label)
-
-        return prot, label,index
-
-
+        return self.ilist[index][0], self.ilist[index][1],self.ilist[index][2]
     def __len__(self):
         return len(self.X)
-
-
-class AttentionModel(nn.Module):
-    def __init__(self, q_inutdim, k_inputdim, v_inutdim):
-        super(AttentionModel, self).__init__()
-        self.q = nn.Linear(q_inutdim, q_inutdim)
-        self.k = nn.Linear(k_inputdim, k_inputdim)
-        self.v = nn.Linear(v_inutdim, v_inutdim)
-        self._norm_fact = 1 / torch.sqrt(torch.tensor(k_inputdim))
-
-    def forward(self, plms1, plms2,plms3, seqlengths):
-        Q = self.q(plms1)
-        K = self.k(plms2)
-        V = self.v(plms3)
-        atten=self.masked_softmax((torch.bmm(Q, K.permute(0, 2, 1))) * self._norm_fact,seqlengths)
-        output = torch.bmm(atten, V)
-        return output + V
-    def create_src_lengths_mask(self, batch_size: int, src_lengths):
-        max_src_len = int(src_lengths.max())
-        src_indices = torch.arange(0, max_src_len).unsqueeze(0).type_as(src_lengths)
-        src_indices = src_indices.expand(batch_size, max_src_len)
-        src_lengths = src_lengths.unsqueeze(dim=1).expand(batch_size, max_src_len)
-        # returns [batch_size, max_seq_len]
-        return (src_indices < src_lengths).int().detach()
-
-    def masked_softmax(self, scores, src_lengths, src_length_masking=True):
-        # scores [batchsize,L*L]
-        if src_length_masking:
-            bsz, src_len, max_src_len = scores.size()
-            # compute masks
-            src_mask = self.create_src_lengths_mask(bsz, src_lengths)
-            src_mask = torch.unsqueeze(src_mask, 2)
-            # Fill pad positions with -inf
-            scores = scores.permute(0, 2, 1)
-            scores = scores.masked_fill(src_mask == 0, -np.inf)
-            scores = scores.permute(0, 2, 1)
-        return F.softmax(scores.float(), dim=-1)
 
 
 class MTLModule(nn.Module):
@@ -166,12 +113,23 @@ class MTLModule(nn.Module):
                                           nn.Linear(512,64),
                                           nn.Dropout(0.5),
                                           nn.Linear(64,2)))
-    def diff_loss(self,shared_embeding1,shared_embeding2):
-        innermul=shared_embeding1*shared_embeding2
-        l2=torch.norm(innermul,dim=2)
-        return torch.sum(l2)
 
-    def forward(self,prot_input,datalengths):
+    def update_ol(self):
+        reg = 1e-6
+        orth_loss = torch.zeros(1).to(device)
+        #need consider all in OC or only shared encoder in OC
+        #all in oc Nuc-798,849
+        #part in oc Nuc-1521
+        for name, param in self.named_parameters():
+            if 'bias' in name or 'nuc_along_share_tasks_fc' in name: #  or 'nuc_along_share_tasks_fc' in name
+                continue
+            else:
+                param_flat = param.view(param.shape[0], -1)
+                sym = torch.mm(param_flat, torch.t(param_flat))
+                sym -= torch.eye(param_flat.shape[0]).to(device)
+                orth_loss = orth_loss + (reg * sym.abs().sum())
+        return orth_loss
+    def forward(self,prot_input):
         prot_input=prot_input.permute(0,2,1)
         prot1=self.share_task_block1(prot_input)
         prot2=self.share_task_block2(prot_input)
@@ -180,26 +138,20 @@ class MTLModule(nn.Module):
         prot2 = prot2.permute(0, 2, 1)
         prot3 = prot3.permute(0, 2, 1)
 
-        diff_loss1 = self.diff_loss(prot1, prot2)
-        diff_loss2 = self.diff_loss(prot2, prot3)
-        diff_loss3 = self.diff_loss(prot1, prot3)
-        diff_losses = diff_loss1 + diff_loss2 + diff_loss3
-
         protd=prot1+ prot2+prot3
 
         nuclist=[]
         for i in range(5):
             nuclist.append(self.nuc_along_share_tasks_fc[i](protd))
-        return nuclist,diff_losses
+        return nuclist,self.update_ol()
 
 def train(modelstoreapl):
-    train_set = BioinformaticsDataset(train_file_list)
+    train_set = BioinformaticsDataset(train_file_list,memorytrainlist,global_task)
     model = MTLModule()
-    epochs = 30
+    epochs = 31
 
     model = model.to(device)
-    train_loader = DataLoader(dataset=train_set, batch_size=16, shuffle=True, num_workers=16, pin_memory=True,
-                              persistent_workers=True,
+    train_loader = DataLoader(dataset=train_set, batch_size=32, shuffle=True,
                               collate_fn=coll_paddding)
     best_val_loss = 3000
 
@@ -208,61 +160,49 @@ def train(modelstoreapl):
     per_cls_weights = torch.FloatTensor([0.15, 0.85]).to(device)
     fcloss = FocalLoss_v2(alpha=per_cls_weights, gamma=2)
     model.train()
-    for i in range(epochs):
+    for j in range(epochs):
 
         epoch_loss_train = 0.0
         nb_train = 0
-        for prot_xs, data_ys, lengths,indexs in train_loader:
-            optimizer.zero_grad()
-            ps=prot_xs.to(device)
+        for prot_xs, data_ys, lengths,taskids in train_loader:
+            task_outs,diff_losses = model(prot_xs.to(device))
+            taskids = taskids.to(device)
+            #lengths = lengths.to('cpu')
+            data_ys = data_ys.to(device)
+            for i in range(len(global_task)):
+                task_outs[i] = torch.nn.utils.rnn.pack_padded_sequence(task_outs[i], lengths, batch_first=True)
+            data_ys = torch.nn.utils.rnn.pack_padded_sequence(data_ys, lengths, batch_first=True)
 
-            nuclist,diff_losses = model(ps, lengths.to(device))
-            adp_loss=0
-            amp_loss=0
-            atp_loss=0
-            gdp_loss=0
-            gtp_loss=0
-            total_length=0
+            taskids = torch.nn.utils.rnn.pack_padded_sequence(taskids, lengths, batch_first=True)
+
             #batchsize=indexs.size(0)
-            for nuc_adp,nuc_amp,nuc_gdp,nuc_gtp,nuc_atp,data_y,index,length in zip(nuclist[0],nuclist[1],nuclist[2],
-                                                    nuclist[3],nuclist[4],data_ys,indexs,lengths):
-                index=index.numpy()
-                length=length.numpy()
-                data_y=data_y.to(device)
-                total_length+=length
-                filename=train_file_list[index]
-                if '_ADP' in filename:
-                    adp_loss+=fcloss(nuc_adp[0:length], data_y[0:length])
-                elif '_AMP' in filename:
-                    amp_loss += fcloss(nuc_amp[0:length], data_y[0:length])
-                elif '_GDP' in filename:
-                    gdp_loss += fcloss(nuc_gdp[0:length], data_y[0:length])
-                elif '_GTP' in filename:
-                    gtp_loss += fcloss(nuc_gtp[0:length], data_y[0:length])
-                else:  #ATP
-                    atp_loss += fcloss(nuc_atp[0:length], data_y[0:length])
+            loss_task = 0
+            for i in range(len(global_task)):
+                indexs = torch.nonzero(taskids.data == i).squeeze()
+                pred = task_outs[i].data[indexs]
+                lbs = data_ys.data[indexs]
+                if lbs.shape[0] > 0:
+                    fc = fcloss(pred, lbs)
+                    loss_task += fc
             #diff_losses*0.001 for pssm
             #diff_losses*0.01 for T5,EMS-2
-            lose=adp_loss+amp_loss+atp_loss+gdp_loss+gtp_loss+diff_losses*0.01
-
-            lose.backward()
+            loss_task=loss_task+diff_losses*0.01
+            optimizer.zero_grad()
+            loss_task.backward()
             optimizer.step()
-            epoch_loss_train = epoch_loss_train + lose.item()
+            epoch_loss_train = epoch_loss_train + loss_task.item()
             nb_train += 1
         epoch_loss_avg = epoch_loss_train / nb_train
+        print(j," epoch_loss_avg: ", epoch_loss_avg)
         if best_val_loss > epoch_loss_avg:
             model_fn = modelstoreapl
             torch.save(model.state_dict(), model_fn)
             best_val_loss = epoch_loss_avg
-            if i % 10 == 0:
-                print('epochs ', i)
-                print("Save model, best_val_loss: ", best_val_loss)
 
 def test(modelstoreapl):
-    test_set = BioinformaticsDataset(test_file_list)
+    test_set = BioinformaticsDataset(test_file_list,memorytestlist,global_task)
 
-    test_load = DataLoader(dataset=test_set, batch_size=32,
-                           num_workers=16, pin_memory=True, persistent_workers=True, collate_fn=coll_paddding)
+    test_load = DataLoader(dataset=test_set, batch_size=32, collate_fn=coll_paddding)
     model = MTLModule()
     model = model.to(device)
 
@@ -270,94 +210,40 @@ def test(modelstoreapl):
 
     model.load_state_dict(torch.load(modelstoreapl))
     model.eval()
-
-    predicted_probs_adp = []
-    labels_actual_adp = []
-    labels_predicted_adp = []
-
-    predicted_probs_amp = []
-    labels_actual_amp = []
-    labels_predicted_amp = []
-
-    predicted_probs_atp = []
-    labels_actual_atp = []
-    labels_predicted_atp = []
-
-    predicted_probs_gdp = []
-    labels_actual_gdp = []
-    labels_predicted_gdp = []
-
-    predicted_probs_gtp = []
-    labels_actual_gtp = []
-    labels_predicted_gtp = []
-
-    with torch.no_grad():
-        for prot_xs,data_ys, lengths,indexs in  test_load:
-            nuclist,diff_losses= model(prot_xs.to(device), lengths.to(device))
-            for nuc_adp,nuc_amp,nuc_gdp,nuc_gtp,nuc_atp,data_y,index,length in zip(nuclist[0],nuclist[1],nuclist[2],
-                                                    nuclist[3],nuclist[4],data_ys,indexs,lengths):
-                index=index.numpy()
-                length=length.numpy()
-                data_y=data_y[0:length]
-                adp_pred = torch.nn.functional.softmax(nuc_adp[0:length], dim=1)
-                adp_pred=adp_pred.to('cpu')
-
-                amp_pred = torch.nn.functional.softmax(nuc_amp[0:length], dim=1)
-                amp_pred = amp_pred.to('cpu')
-                gdp_pred = torch.nn.functional.softmax(nuc_gdp[0:length], dim=1)
-                gdp_pred = gdp_pred.to('cpu')
-
-                gtp_pred = torch.nn.functional.softmax(nuc_gtp[0:length], dim=1)
-                gtp_pred = gtp_pred.to('cpu')
-
-                atp_pred = torch.nn.functional.softmax(nuc_atp[0:length], dim=1)
-                atp_pred = atp_pred.to('cpu')
-
-                filename=test_file_list[index]
-
-                if '_ADP' in filename:
-                    predicted_probs_adp.extend(adp_pred[:, 1])
-                    labels_actual_adp.extend(data_y)
-                    labels_predicted_adp.extend(torch.argmax(adp_pred, dim=1))
-                elif '_AMP' in filename:
-                    predicted_probs_amp.extend(amp_pred[:, 1])
-                    labels_actual_amp.extend(data_y)
-                    labels_predicted_amp.extend(torch.argmax(amp_pred, dim=1))
-                elif '_GDP' in filename:
-                    predicted_probs_gdp.extend(gdp_pred[:, 1])
-                    labels_actual_gdp.extend(data_y)
-                    labels_predicted_gdp.extend(torch.argmax(gdp_pred, dim=1))
-                elif '_GTP' in filename:
-                    predicted_probs_gtp.extend(gtp_pred[:, 1])
-                    labels_actual_gtp.extend(data_y)
-                    labels_predicted_gtp.extend(torch.argmax(gtp_pred, dim=1))
-                else:  #ATP
-                    predicted_probs_atp.extend(atp_pred[:, 1])
-                    labels_actual_atp.extend(data_y)
-                    labels_predicted_atp.extend(torch.argmax(atp_pred, dim=1))
-    #con
-
-
-    print('-------------->')
     tmresult = {}
 
-    sensitivity, specificity, acc, precision, mcc, auc, aupr_1 = printresult('ADP', labels_actual_adp,
-                                                                             predicted_probs_adp, labels_predicted_adp)
-    tmresult['ADP'] = [sensitivity, specificity, acc, precision, mcc, auc, aupr_1]
+    predicted_probs = [[] for i in range(len(global_task))]
+    labels_actual = [[] for i in range(len(global_task))]
+    labels_predicted = [[] for i in range(len(global_task))]
 
-    sensitivity, specificity, acc, precision, mcc, auc, aupr_1 = printresult('AMP', labels_actual_amp,
-                                                                             predicted_probs_amp, labels_predicted_amp)
-    tmresult['AMP'] = [sensitivity, specificity, acc, precision, mcc, auc, aupr_1]
-    sensitivity, specificity, acc, precision, mcc, auc, aupr_1 = printresult('ATP', labels_actual_atp,
-                                                                             predicted_probs_atp, labels_predicted_atp)
-    tmresult['ATP'] = [sensitivity, specificity, acc, precision, mcc, auc, aupr_1]
-    sensitivity, specificity, acc, precision, mcc, auc, aupr_1 = printresult('GDP', labels_actual_gdp,
-                                                                             predicted_probs_gdp, labels_predicted_gdp)
-    tmresult['GDP'] = [sensitivity, specificity, acc, precision, mcc, auc, aupr_1]
-    sensitivity, specificity, acc, precision, mcc, auc, aupr_1 = printresult('GTP', labels_actual_gtp,
-                                                                             predicted_probs_gtp, labels_predicted_gtp)
-    tmresult['GTP'] = [sensitivity, specificity, acc, precision, mcc, auc, aupr_1]
 
+    with torch.no_grad():
+        for prot_xs,data_ys, lengths,taskids in  test_load:
+            task_outs,diff_losses= model(prot_xs.to(device))
+            for i in range(len(global_task)):
+                task_outs[i] = torch.nn.utils.rnn.pack_padded_sequence(task_outs[i], lengths.to('cpu'),
+                                                                       batch_first=True)
+            data_ys = torch.nn.utils.rnn.pack_padded_sequence(data_ys, lengths, batch_first=True)
+            taskids = torch.nn.utils.rnn.pack_padded_sequence(taskids, lengths, batch_first=True)
+
+            for i in range(len(global_task)):
+                indexs = torch.nonzero(taskids.data == i).squeeze()
+                task_pred = task_outs[i].data[indexs]
+                lbs = data_ys.data[indexs]
+                task_pred = torch.nn.functional.softmax(task_pred, dim=1)
+                task_pred = task_pred.to('cpu')
+                if lbs.shape[0] > 0:
+                    predicted_probs[i].extend(task_pred[:, 1])
+                    labels_actual[i].extend(lbs)
+                    labels_predicted[i].extend(torch.argmax(task_pred, dim=1))
+
+        itask_names = global_task
+        itaskid = [i for i in range(len(itask_names))]
+        for id, task_name in zip(itaskid, itask_names):
+            sensitivity, specificity, acc, precision, mcc, auc, aupr_1 = printresult(task_name, labels_actual[id],
+                                                                                     predicted_probs[id],
+                                                                                     labels_predicted[id])
+            tmresult[task_name] = [sensitivity, specificity, acc, precision, mcc, auc, aupr_1]
     return tmresult
 
 
@@ -391,43 +277,42 @@ def printresult(ligand,actual_label,predict_prob,predict_label):
     return sensitivity, specificity, acc, precision, mcc, auc, aupr_1
 if __name__ == "__main__":
     cuda = torch.cuda.is_available()
-    #torch.cuda.set_device(0)
+    torch.cuda.set_device(0)
     print("use cuda: {}".format(cuda))
     device = torch.device("cuda" if cuda else "cpu")
+    memorytrainlist = []
+    memorytestlist = []
 
-
-    trainfiles = [  'DataSet/Train/Nuc-1521_train_all.txt'
-        #'DataSet/Train/Nuc-798_Train_all.txt',
-        #'DataSet/Train/Nuc-849_Train_all.txt',
+    trainfiles = [  'DataSet/Train/pretrain_train_all_newdataset.txt'
+        #'DataSet/Train/pretrain_train_all227.txt',
+        #'DataSet/Train/pretrain_train_all221.txt'
     ]
-    testfiles = [ 'DataSet/Test/Nuc-1521_Test_all.txt'
-        #'DataSet/Test/Nuc-798_Test_all.txt',
-        #'DataSet/Test/Nuc-849_Test_all.txt'
+    testfiles = ['DataSet/Test/pretrain_test_all_newdataset.txt'
+        #'DataSet/Test/pretrain_test_all_17.txt',
+        #'DataSet/Test/pretrain_test_all_50.txt'
     ]
     pls = ['NucMoMTL'
     ]
-
+    global_task=['ATP','ADP','AMP','GDP','GTP']
     circle = 5
 
     for trains, tests, pl in zip(trainfiles, testfiles, pls):
         train_file_list = read_data_file_trip(trains)
         test_file_list = read_data_file_trip(tests)
-        totalkv = {'ATP': [], 'ADP': [], 'AMP': [], 'GDP': [], 'GTP': []}
+        totalkv = {task:[] for task in global_task}
+        memorytrainlist = []
+        memorytestlist = []
         for i in range(circle):
-            storeapl = 'MTLT5ADD_l2_MTL_' + pl + '_' + str(i) + '.pkl'
+            storeapl = 'AddTest/MTLADD_MTL-1521—_7_part_oc_T5_all_' + pl + '_' + str(i) + '.pkl'
             train(storeapl)
             tmresult = test(storeapl)
 
-            totalkv['ATP'].append(tmresult['ATP'])
-            totalkv['ADP'].append(tmresult['ADP'])
-            totalkv['AMP'].append(tmresult['AMP'])
-            totalkv['GDP'].append(tmresult['GDP'])
-            totalkv['GTP'].append(tmresult['GTP'])
+            for task in global_task:
+                totalkv[task].append(tmresult[task])
             torch.cuda.empty_cache()
 
-        with open('Result_MTLT5_ADD_l2MTL_' + pl + '.txt', 'w') as f:
-            nucs = ['ATP', 'ADP', 'AMP', 'GDP', 'GTP']
-            for nuc in nucs:
+        with open('AddTest/Result_MTLT-1521_7_part_OC_T5_MTL_' + pl + '.txt', 'w') as f:
+            for nuc in global_task:
                 np.savetxt(f, totalkv[nuc], delimiter=',', footer='Above is  record ' + nuc, fmt='%s')
                 m = np.mean(totalkv[nuc], axis=0)
                 np.savetxt(f, [m], delimiter=',', footer='----------Above is AVG -------' + nuc, fmt='%s')
