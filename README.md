@@ -31,11 +31,11 @@ run "python3 NucMoMTL_Nuc207_1521.py" for training and testing the model for ATP
 
 1. unzip the pre-trained model in pre_model folder；  
    pre_model  
-   |--   S2MTLTT5Msl2ADDMTL_S2Nuc-CNN_M_scale_l2ADD_02__T5_1.pkl  
-   |--   S2MTLTT5Msl2ADDMTL_S2Nuc-CNN_M_scale_l2ADD_02__T5_2.pkl  
-   |--   S2MTLTT5Msl2ADDMTL_S2Nuc-CNN_M_scale_l2ADD_02__T5_3.pkl  
-   |--   S2MTLTT5Msl2ADDMTL_S2Nuc-CNN_M_scale_l2ADD_02__T5_4.pkl  
-   |--   S2MTLTT5Msl2ADDMTL_S2Nuc-CNN_M_scale_l2ADD_02__T5_5.pkl
+   |--   NucMoMTL-1521_0.pkl  
+   |--   NucMoMTL-1521_1.pkl  
+   |--   NucMoMTL-1521_2.pkl  
+   |--   NucMoMTL-1521_3.pkl  
+   |--   NucMoMTL-1521_4.pkl
 
 
    Alternatively, download the pre-trained models from http://pan.njust.edu.cn/#/link/yirwtnIWna3w3u2i7HdG
