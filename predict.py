@@ -99,12 +99,23 @@ class MTLModule(nn.Module):
                                           nn.Linear(512,64),
                                           nn.Dropout(0.5),
                                           nn.Linear(64,2)))
-    def diff_loss(self,shared_embeding1,shared_embeding2):
-        innermul=shared_embeding1*shared_embeding2
-        l2=torch.norm(innermul,dim=2)
-        return torch.sum(l2)
 
-    def forward(self,prot_input,datalengths):
+    def update_ol(self):
+        reg = 1e-6
+        orth_loss = torch.zeros(1).to(device)
+        #need consider all in OC or only shared encoder in OC
+        #all in oc Nuc-798,849
+        #part in oc Nuc-1521
+        for name, param in self.named_parameters():
+            if 'bias' in name or 'nuc_along_share_tasks_fc' in name: #  or 'nuc_along_share_tasks_fc' in name
+                continue
+            else:
+                param_flat = param.view(param.shape[0], -1)
+                sym = torch.mm(param_flat, torch.t(param_flat))
+                sym -= torch.eye(param_flat.shape[0]).to(device)
+                orth_loss = orth_loss + (reg * sym.abs().sum())
+        return orth_loss
+    def forward(self,prot_input):
         prot_input=prot_input.permute(0,2,1)
         prot1=self.share_task_block1(prot_input)
         prot2=self.share_task_block2(prot_input)
@@ -113,24 +124,17 @@ class MTLModule(nn.Module):
         prot2 = prot2.permute(0, 2, 1)
         prot3 = prot3.permute(0, 2, 1)
 
-        diff_loss1 = self.diff_loss(prot1, prot2)
-        diff_loss2 = self.diff_loss(prot2, prot3)
-        diff_loss3 = self.diff_loss(prot1, prot3)
-        diff_losses = diff_loss1 + diff_loss2 + diff_loss3
-
         protd=prot1+ prot2+prot3
 
         nuclist=[]
         for i in range(5):
             nuclist.append(self.nuc_along_share_tasks_fc[i](protd))
-        return nuclist,diff_losses
-
+        return nuclist,self.update_ol()
 
 def test(modelstoreapl,intputfile):
     test_set = BioinformaticsDataset([intputfile])
 
-    test_load = DataLoader(dataset=test_set, batch_size=1,
-                           num_workers=16, pin_memory=True, persistent_workers=True)
+    test_load = DataLoader(dataset=test_set, batch_size=1,pin_memory=True, persistent_workers=True)
     model = MTLModule()
     model = model.to(device)
 
@@ -143,7 +147,7 @@ def test(modelstoreapl,intputfile):
     task_preds = []
     with torch.no_grad():
         for prot_xs in  test_load:
-            nuclist,diff_losses= model(prot_xs.to(device), torch.tensor([1,1]).to(device))
+            nuclist,diff_losses= model(prot_xs.to(device))
 
             for i in range(len(nuclist)):
                 task_pred = nuclist[i]
@@ -189,7 +193,7 @@ if __name__ == "__main__":
     seqs = [s for s in student_tuples[0]]
     pdata = {}
     pdata['sequence'] = seqs
-    task_preds=test('pre_model/S2MTLTT5Msl2ADDMTL_S2Nuc-CNN_M_scale_l2ADD_02__T5_1.pkl',tmp_embedding)
+    task_preds=test('pre_model/NucMoMTL-1521_0.pkl',tmp_embedding)
     #nuc_adp, nuc_amp, nuc_gdp, nuc_gtp, nuc_atp
     pdata['ADP']=task_preds[0]
     pdata['AMP']=task_preds[1]
